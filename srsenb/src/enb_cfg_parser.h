@@ -548,6 +548,20 @@ private:
   asn1::rrc::mbsfn_area_info_list_r9_l* mbsfn_list;
   bool*                                 enabled;
 };
+
+class sib10_cell_parser : public parser::field_itf
+{
+public:
+  sib10_cell_parser(asn1::rrc::sib_type10_s* data_) { data = data_; }
+  ~sib10_cell_parser(){}
+  int         parse(Setting& root);
+  const char* get_name() {
+    return "sib10_cell";
+  }
+
+private:
+  asn1::rrc::sib_type10_s* data;
+};
 }
 
 #endif

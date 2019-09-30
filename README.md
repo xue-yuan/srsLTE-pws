@@ -1,6 +1,8 @@
 srsLTE
 ========
 
+Based on commit hash (c4bcd6e2)
+
 [![Build Status](https://travis-ci.org/srsLTE/srsLTE.svg?branch=master)](https://travis-ci.org/srsLTE/srsLTE)
 
 srsLTE is a free and open-source LTE software suite developed by SRS (www.softwareradiosystems.com). 

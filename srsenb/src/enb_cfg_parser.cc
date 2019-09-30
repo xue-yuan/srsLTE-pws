@@ -622,6 +622,38 @@ int enb::parse_sib9(std::string filename, sib_type9_s* data)
   }
 }
 
+int enb::parse_sib10(std::string filename, sib_type10_s* data)
+{
+  parser::section sib10("sib10");
+  sib10.add_field(new sib10_cell_parser(data));
+
+  // Run parser with single section
+  return parser::parse_section(filename, &sib10);
+}
+
+int sib10_cell_parser::parse(libconfig::Setting& root)
+{
+    field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> message_identifier("message_identifier",
+                                    &data->msg_id);
+    if (message_identifier.parse(root)) {
+        fprintf(stderr, "Error parsing message identifier\n");
+        return -1;
+    }
+
+    field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> serial_number("serial_number",
+                                    &data->serial_num);
+    if (serial_number.parse(root)) {
+        fprintf(stderr, "Error parsing serial number\n");
+        return -1;
+    }
+
+    // @TODO
+    //field_asn1_octstring_number<asn1::fixed_octstring<2>, uint8_t> waring_type("waring_type",
+    //                                &data->waring_type);
+
+    return 0;
+}
+
 int enb::parse_sib13(std::string filename, sib_type13_r9_s* data)
 {
   parser::section sib13("sib13");
@@ -724,6 +756,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   sib_type4_s*     sib4  = &rrc_cfg->sibs[3].set_sib4();
   sib_type7_s*     sib7  = &rrc_cfg->sibs[6].set_sib7();
   sib_type9_s*     sib9  = &rrc_cfg->sibs[8].set_sib9();
+  sib_type10_s*    sib10 = &rrc_cfg->sibs[9].set_sib10();
   sib_type13_r9_s* sib13 = &rrc_cfg->sibs[12].set_sib13_v920();
 
   sib_type1_s* sib1 = &rrc_cfg->sib1;
@@ -806,6 +839,13 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   // Generate SIB9 if defined in mapping info
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type9)) {
     if (parse_sib9(args->enb_files.sib_config, sib9)) {
+      return -1;
+    }
+  }
+
+  // Generate SIB10 if defined in mapping info
+  if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type10)) {
+    if (parse_sib10(args->enb_files.sib_config, sib10)) {
       return -1;
     }
   }

@@ -528,6 +528,7 @@ bool rrc::is_paging_opportunity(uint32_t tti, uint32_t *payload_len)
       } else if ((uint32_t)sf_idx == (tti % 10)) {
 
         paging_rec->paging_record_list_present = true;
+        paging_rec->etws_ind_present = true;
         paging_record_s paging_elem;
         if (u.choice_type == LIBLTE_S1AP_UEPAGINGID_CHOICE_IMSI) {
           paging_elem.ue_id.set_imsi();
