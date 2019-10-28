@@ -625,6 +625,7 @@ int enb::parse_sib9(std::string filename, sib_type9_s* data)
 int enb::parse_sib10(std::string filename, sib_type10_s* data)
 {
   parser::section sib10("sib10");
+  // call cell parser
   sib10.add_field(new sib10_cell_parser(data));
 
   // Run parser with single section
@@ -650,6 +651,25 @@ int sib10_cell_parser::parse(libconfig::Setting& root)
     // @TODO
     //field_asn1_octstring_number<asn1::fixed_octstring<2>, uint8_t> waring_type("waring_type",
     //                                &data->waring_type);
+
+    // warning type: 0x580, 0000 0101 1000 0000
+    field_asn1_octstring_number<asn1::fixed_octstring<2>, uint16_t> warning_type("warning_type", &data->warning_type);
+		if (warning_type.parse(root)) {
+        fprintf(stderr, "Error parsing warning type\n");
+        return -1;
+    }    
+    fprintf(stderr, "Warning type\n");
+//    fprintf(stderr, *data->warning_type);
+
+		
+    // warning type parse error
+    /*
+    if (warning_type.parse(root)) {
+	fprintf("stderr", "Error===============\n");
+	return -1;
+    }
+    */
+    // dummy?
 
     return 0;
 }

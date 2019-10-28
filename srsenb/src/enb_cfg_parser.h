@@ -467,6 +467,64 @@ private:
   func_ptr    f;
 };
 
+/*template <class OctString, class NumType>
+class field_asn1_octstring_number : public field_asn1
+{
+	OctString* store_ptr;
+
+public:
+	field_asn1_octstring_number(const char* name_, OctString* store_ptr_, bool* enabled_value_ = NULL) :
+		field_asn1(name_, enabled_value_),
+		store_ptr(store_ptr_)
+	{
+	}
+
+};
+
+ template <class OctString>
+ field_asn1_octstring_number<OctString, uint8_t>* make_asn1_octstring_number_parser(const char* name,
+                                                                                     OctString*  store_ptr)
+ {
+   return new field_asn1_octstring_number<OctString, uint8_t>(name, store_ptr);
+ }
+*/
+
+template <class OctString, class NumType>
+class field_asn1_octstring_number : public field_asn1
+{
+  OctString* store_ptr;
+
+public:
+  field_asn1_octstring_number(const char* name_, OctString* store_ptr_, bool* enabled_value_ = NULL) :
+    field_asn1(name_, enabled_value_),
+    store_ptr(store_ptr_)
+  {
+  }
+
+  int parse_value(Setting& root)
+  {
+    NumType val;
+    if (parser::lookupValue(root, name, &val)) {
+      store_ptr->from_number(val);
+      return 0;
+    } else {
+      std::string str_val;
+      if (parser::lookupValue(root, name, &str_val)) {
+        fprintf(stderr, "PARSER ERROR: Expected number for field %s but got the string \"%s\"\n", name,
+                str_val.c_str());
+      }   
+    }   
+    return -1; 
+  }
+};
+
+template <class OctString>
+field_asn1_octstring_number<OctString, uint32_t>* make_asn1_octstring_number_parser(const char* name,
+                                                                                    OctString*  store_ptr)
+{
+  return new field_asn1_octstring_number<OctString, uint32_t>(name, store_ptr);
+}
+
 template <class BitString, class NumType>
 class field_asn1_bitstring_number : public field_asn1
 {
