@@ -489,6 +489,35 @@ public:
  }
 */
 
+// template <class OctString>
+// class field_asn1_dyn_octstring_number : public field_asn1
+// {
+//   OctString* store_ptr;
+
+// public:
+//   field_asn1_dyn_octstring_number(const char* name_, OctString* store_ptr_, bool* enabled_value_ = NULL) :
+//     field_asn1(name_, enabled_value_),
+//     store_ptr(store_ptr_)
+//   {
+//   }
+
+//   int parse_value(Setting& root)
+//   {
+//     NumType val;
+//     if (parser::lookupValue(root, name, &val)) {
+//       store_ptr->from_number(val);
+//       return 0;
+//     } else {
+//       std::string str_val;
+//       if (parser::lookupValue(root, name, &str_val)) {
+//         fprintf(stderr, "PARSER ERROR: Expected number for field %s but got the string \"%s\"\n", name,
+//                 str_val.c_str());
+//       }   
+//     }   
+//     return -1; 
+//   }
+// }
+
 template <class OctString, class NumType>
 class field_asn1_octstring_number : public field_asn1
 {
@@ -619,6 +648,20 @@ public:
 
 private:
   asn1::rrc::sib_type10_s* data;
+};
+
+class sib11_cell_parser : public parser::field_itf
+{
+public:
+  sib11_cell_parser(asn1::rrc::sib_type11_s* data_) { data = data_; }
+  ~sib11_cell_parser(){}
+  int         parse(Setting& root);
+  const char* get_name() {
+    return "sib11_cell";
+  }
+
+private:
+  asn1::rrc::sib_type11_s* data;
 };
 
 class sib12_cell_parser : public parser::field_itf

@@ -7442,7 +7442,7 @@ struct rr_cfg_common_sib_s {
   copy_ptr<pusch_cfg_common_v1270_s> pusch_cfg_common_v1270;
   // group 3
   bool                               bcch_cfg_v1310_present         = false;
-  bool                               pcch_cfg_v1310_present         = false;
+  bool                               pcch_cfg_v1310_present         = true; /*rewrite*/
   bool                               freq_hop_params_r13_present    = false;
   bool                               pdsch_cfg_common_v1310_present = false;
   bool                               pusch_cfg_common_v1310_present = false;
@@ -8354,7 +8354,7 @@ struct sib_type11_s {
   fixed_bitstring<16>         serial_num;
   warning_msg_segment_type_e_ warning_msg_segment_type;
   uint8_t                     warning_msg_segment_num = 0;
-  dyn_octstring               warning_msg_segment;
+  dyn_octstring               warning_msg_segment = 84;
   fixed_octstring<1>          data_coding_scheme;
   // ...
   bool          late_non_crit_ext_present = false;
@@ -8379,14 +8379,14 @@ struct sib_type12_r9_s {
   bool                           ext                           = false;
   bool                           data_coding_scheme_r9_present = false;
   bool                           late_non_crit_ext_present     = false;
-  fixed_bitstring<16>            msg_id_r9;
-  fixed_bitstring<16>            serial_num_r9;
-  warning_msg_segment_type_r9_e_ warning_msg_segment_type_r9;
-  uint8_t                        warning_msg_segment_num_r9 = 0;
-  dyn_octstring                  warning_msg_segment_r9;
-  fixed_octstring<1>             data_coding_scheme_r9;
-  dyn_octstring                  late_non_crit_ext;
-  // ...
+  fixed_bitstring<16>            msg_id_r9; // Done
+  fixed_bitstring<16>            serial_num_r9; // Done
+  warning_msg_segment_type_r9_e_ warning_msg_segment_type_r9; // Done
+  uint8_t                        warning_msg_segment_num_r9 ; // Done
+  dyn_octstring                  warning_msg_segment_r9 = 84; 
+  fixed_octstring<1>             data_coding_scheme_r9; // Dont Touch
+  dyn_octstring                  late_non_crit_ext; // Dont Touch
+
   // group 0
   bool          warning_area_coordinates_segment_r15_present = false;
   dyn_octstring warning_area_coordinates_segment_r15;
@@ -40038,7 +40038,7 @@ typedef dyn_array<paging_record_s> paging_record_list_l;
 struct paging_s {
   // member variables
   bool                 paging_record_list_present = false;
-  bool                 sys_info_mod_present       = false;
+  bool                 sys_info_mod_present       = true; /*rewrite*/
   bool                 etws_ind_present           = false;
   bool                 non_crit_ext_present       = false;
   paging_record_list_l paging_record_list;
@@ -40069,8 +40069,15 @@ struct pcch_msg_type_c {
     paging_s&       paging() { return c; }
     const paging_s& paging() const { return c; }
 
+    paging_v920_ies_s&       paging_v920() { return c920; }
+    const paging_v920_ies_s& paging_v920() const { return c920; }
+		
+		paging_v890_ies_s&       paging_v890() { return c890; }
+    const paging_v890_ies_s& paging_v890() const { return c890; }
   private:
     paging_s c;
+    paging_v920_ies_s c920;
+    paging_v890_ies_s c890;
   };
   struct types_opts {
     enum options { c1, msg_class_ext, nulltype } value;

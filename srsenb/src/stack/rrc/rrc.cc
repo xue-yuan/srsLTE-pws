@@ -476,7 +476,6 @@ bool rrc::release_erabs(uint32_t rnti)
   These functions use a different mutex because access different shared variables
   than user map
 *******************************************************************************/
-
 void rrc::add_paging_id(uint32_t ueid, LIBLTE_S1AP_UEPAGINGID_STRUCT UEPagingID) 
 {
   pthread_mutex_lock(&paging_mutex);
@@ -492,16 +491,27 @@ void rrc::add_paging_id(uint32_t ueid, LIBLTE_S1AP_UEPAGINGID_STRUCT UEPagingID)
 bool rrc::is_paging_opportunity(uint32_t tti, uint32_t *payload_len)
 {
   int sf_pattern[4][4] = {{9, 4, -1, 0}, {-1, 9, -1, 4}, {-1, -1, -1, 5}, {-1, -1, -1, 9}};
-  
   if (pending_paging.empty()) {
+		
     return false; 
   }
-
   pthread_mutex_lock(&paging_mutex);
 
   asn1::rrc::pcch_msg_s pcch_msg;
   pcch_msg.msg.set_c1();
   paging_s* paging_rec = &pcch_msg.msg.c1().paging();
+  paging_v920_ies_s paging_rec_v920;
+  paging_v890_ies_s paging_rec_v890;
+  
+/*  paging_rec->paging_record_list_present = true;
+  paging_rec_v920.cmas_ind_r9_present = true;
+  paging_rec_v890.non_crit_ext_present = true;
+  paging_rec_v890.non_crit_ext = paging_rec_v920;
+  paging_rec->non_crit_ext_present = true;
+  paging_rec->non_crit_ext = paging_rec_v890;
+  paging_record_s paging_elem;*/
+
+  
 
   // Default paging cycle, should get DRX from user
   uint32_t T  = cfg.sibs[1].sib2().rr_cfg_common.pcch_cfg.default_paging_cycle.to_number();
@@ -518,17 +528,22 @@ bool rrc::is_paging_opportunity(uint32_t tti, uint32_t *payload_len)
        n < ASN1_RRC_MAX_PAGE_REC && iter != pending_paging.end(); ++iter) {
     LIBLTE_S1AP_UEPAGINGID_STRUCT u    = (LIBLTE_S1AP_UEPAGINGID_STRUCT)iter->second;
     uint32_t                      ueid = ((uint32_t)iter->first) % 1024;
-    uint32_t                      i_s  = (ueid / N) % Ns;
-
+    uint32_t                      i_s  = (ueid / N) % Ns;	
     if ((sfn % T) == (T / N) * (ueid % N)) {
 
       int sf_idx = sf_pattern[i_s % 4][(Ns - 1) % 4];
       if (sf_idx < 0) {
-        rrc_log->error("SF pattern is N/A for Ns=%d, i_s=%d, imsi_decimal=%d\n", Ns, i_s, ueid);
+				        rrc_log->error("SF pattern is N/A for Ns=%d, i_s=%d, imsi_decimal=%d\n", Ns, i_s, ueid);
+								rrc_log->console("FKKKKKKKKKKKKKKK");
       } else if ((uint32_t)sf_idx == (tti % 10)) {
+				paging_rec->paging_record_list_present = true;
+        //paging_rec->etws_ind_present = true;
 
-        paging_rec->paging_record_list_present = true;
-        paging_rec->etws_ind_present = true;
+				paging_rec_v920.cmas_ind_r9_present = true;
+        paging_rec_v890.non_crit_ext_present = true;
+        paging_rec_v890.non_crit_ext = paging_rec_v920;
+        paging_rec->non_crit_ext_present = true;
+        paging_rec->non_crit_ext = paging_rec_v890;
         paging_record_s paging_elem;
         if (u.choice_type == LIBLTE_S1AP_UEPAGINGID_CHOICE_IMSI) {
           paging_elem.ue_id.set_imsi();

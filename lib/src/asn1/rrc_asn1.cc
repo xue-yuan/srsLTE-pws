@@ -80123,8 +80123,19 @@ void paging_s::to_json(json_writer& j) const
   }
   if (non_crit_ext_present) {
     j.write_fieldname("nonCriticalExtension");
-    non_crit_ext.to_json(j);
-  }
+		j.start_obj();
+
+    j.write_fieldname("nonCriticalExtension");
+    j.start_obj();
+
+    j.write_str("cmas-Indication-r9", "true");
+    j.end_obj();
+    j.end_obj();
+
+//    j.write_fieldname("nonCriticalExtension");
+ //   non_crit_ext.to_json(j);
+
+  } 
   j.end_obj();
 }
 

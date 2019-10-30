@@ -176,6 +176,8 @@ private:
   int  parse_sib7(std::string filename, asn1::rrc::sib_type7_s* data);
   int  parse_sib9(std::string filename, asn1::rrc::sib_type9_s* data);
   int  parse_sib10(std::string filename, asn1::rrc::sib_type10_s* data);
+  int  parse_sib11(std::string filename, asn1::rrc::sib_type11_s* data);
+  int  parse_sib12(std::string filename, asn1::rrc::sib_type12_r9_s* data);
   int  parse_sib13(std::string filename, asn1::rrc::sib_type13_r9_s* data);
   int  parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_common);
   int  parse_rr(all_args_t* args, rrc_cfg_t* rrc_cfg);

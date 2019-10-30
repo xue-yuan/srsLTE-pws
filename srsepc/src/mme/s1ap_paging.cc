@@ -97,14 +97,14 @@ bool s1ap_paging::send_paging(uint64_t imsi, uint16_t erab_to_setup)
 
   // UE Paging Id
   paging->UEPagingID.choice_type                  = LIBLTE_S1AP_UEPAGINGID_CHOICE_S_TMSI;
-  paging->UEPagingID.choice.s_TMSI.ext            = false;
+  paging->UEPagingID.choice.s_TMSI.ext            = true;//rewrite
   paging->UEPagingID.choice.s_TMSI.mMEC.buffer[0] = m_s1ap->m_s1ap_args.mme_code;
   uint32_t m_tmsi                                 = nas_ctx->m_sec_ctx.guti.m_tmsi;
   srslte::uint32_to_uint8(m_tmsi, paging->UEPagingID.choice.s_TMSI.m_TMSI.buffer);
   paging->UEPagingID.choice.s_TMSI.iE_Extensions_present = false;
 
   // Paging DRX
-  paging->pagingDRX_present = false;
+  paging->pagingDRX_present = true;//rewrite
 
   // CMDomain
   paging->CNDomain = LIBLTE_S1AP_CNDOMAIN_PS;

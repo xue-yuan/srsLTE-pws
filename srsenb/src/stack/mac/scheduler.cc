@@ -1135,10 +1135,10 @@ void sched::dl_sched_bc(tti_sched_t* tti_sched)
       pending_sibs[i].n_tx++;
     }
   }
-
+ 
   /* Allocate DCIs and RBGs for paging */
   if (rrc) {
-    uint32_t paging_payload = 0;
+    uint32_t paging_payload = 1;
     if (rrc->is_paging_opportunity(current_tti, &paging_payload) and paging_payload) {
       tti_sched->alloc_paging(bc_aggr_level, paging_payload);
     }

@@ -650,21 +650,91 @@ int sib10_cell_parser::parse(libconfig::Setting& root)
 
     field_asn1_octstring_number<asn1::fixed_octstring<2>, uint16_t> warning_type("warning_type", &data->warning_type);
 	
-	if (warning_type.parse(root)) {
+	  if (warning_type.parse(root)) {
         fprintf(stderr, "Error parsing warning type\n");
         return -1;
     }
     
-    // fprintf(stderr, "Warning type\n");
-
     return 0;
 }
 
+// sib11
+int enb::parse_sib11(std::string filename, sib_type11_s* data)
+{
+  parser::section sib11("sib11");
+  // call cell parser
+  sib11.add_field(new sib11_cell_parser(data));
+  sib11.add_field(new parser::field<uint8>("warning_message_segment_number", &data->warning_msg_segment_num));
+
+  // Run parser with single section
+  return parser::parse_section(filename, &sib11);
+}
+
+int sib11_cell_parser::parse(libconfig::Setting& root)
+{
+    field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> message_identifier("message_identifier",
+                                    &data->msg_id);
+    if (message_identifier.parse(root)) {
+        fprintf(stderr, "Error parsing message identifier\n");
+        return -1;
+    }
+
+    field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> serial_number("serial_number",
+                                    &data->serial_num);
+    if (serial_number.parse(root)) {
+        fprintf(stderr, "Error parsing serial number\n");
+        return -1;
+    }
+
+    field_asn1_octstring_number<asn1::fixed_octstring<1>, uint16_t> data_coding_scheme("data_coding_scheme",
+                                     &data->data_coding_scheme);
+
+    data->data_coding_scheme_present= true;
+
+    if (data_coding_scheme.parse(root)) {
+         fprintf(stderr, "Error parsing data_coding_scheme\n");
+        return -1;
+    }
+
+    field_asn1_enum_str<sib_type11_s::warning_msg_segment_type_e_> warning_message_segment_type("warning_message_segment_type", \
+                                    &data->warning_msg_segment_type);
+
+    if (warning_message_segment_type.parse(root)) {
+        fprintf(stderr, "Error parsing warning_message_segment_type\n");
+        return -1;
+    }
+
+    unsigned int a[] = {0x01, 0xC5, 0x76, 0x59, 0x7E, 0x2E, 0xBB, 0xC7, 0xF9, 0x50, 0xA8, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1,0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46,0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x00, 0x0A};
+    // unsigned int a[] = {0x01, 0xC5, 0x76, 0x59, 0x7E, 0x2E, 0xBB, 0xC7, 0xF9, 0x50, 0xA8, 0xD1, 0x68, 0x34, 0x1A, 0x0A};
+
+   	for (int i = 0; i < 84; ++i) {
+       data->warning_msg_segment[i] = a[i];
+		} 
+
+    field_asn1_octstring_number<asn1::dyn_octstring, uint16_t> warning_message_segment("warning_message_segment", \
+                                    &data->warning_msg_segment);
+		
+		for (int i = 0; i < sizeof(data->warning_msg_segment); ++i) {
+			printf("%02X", data->warning_msg_segment[i]);
+		}
+		puts("");
+
+    if (warning_message_segment.parse(root)) {
+        fprintf(stderr, "Error parsing warning_message_segment\n");
+        return -1;
+    }
+
+
+    return 0;
+} 
+
+//sib12
 int enb::parse_sib12(std::string filename, sib_type12_r9_s* data)
 {
-  parser::section sib12("sib10");
+  parser::section sib12("sib12");
   // call cell parser
-  sib10.add_field(new sib12_cell_parser(data));
+  sib12.add_field(new sib12_cell_parser(data));
+  sib12.add_field(new parser::field<uint8>("warning_message_segment_number", &data->warning_msg_segment_num_r9));
 
   // Run parser with single section
   return parser::parse_section(filename, &sib12);
@@ -685,8 +755,75 @@ int sib12_cell_parser::parse(libconfig::Setting& root)
         fprintf(stderr, "Error parsing serial number\n");
         return -1;
     }
-    
-    // fprintf(stderr, "Warning type\n");
+    field_asn1_octstring_number<asn1::fixed_octstring<1>, uint16_t> data_coding_scheme("data_coding_scheme",
+                                     &data->data_coding_scheme_r9);
+    data->data_coding_scheme_r9_present= true;
+    if (data_coding_scheme.parse(root)) {
+         fprintf(stderr, "Error parsing data_coding_scheme\n");
+        return -1;
+    }
+    field_asn1_enum_str<sib_type12_r9_s::warning_msg_segment_type_r9_e_> warning_message_segment_type("warning_message_segment_type", \
+                                    &data->warning_msg_segment_type_r9);
+    if (warning_message_segment_type.parse(root)) {
+        fprintf(stderr, "Error parsing warning_message_segment_type\n");
+        return -1;
+    }
+
+    // unsigned int a[] = {0x01, 0xC5, 0x76, 0x59, 0x7E, 0x2E, 0xBB, 0xC7, 0xF9, 0x50, 0xA8, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1,0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46,0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x00, 0x0A};
+    // unsigned int a[] = {0x01, 0xC5, 0x76, 0x59, 0x7E, 0x2E, 0xBB, 0xC7, 0xF9, 0x50, 0xA8, 0xD1, 0x68, 0x34, 0x1A, 0x0A};
+    // unsigned int a[] = {0x01, 0x00, 0x68, 0x00, 0x74, 0x00, 0x74, 0x00, 0x70, 0x00, 0x73, 0x00, 0x3A, 0x00, 0x2F, 0x00, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1,0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46,0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x00, 0x0F};
+    // unsigned int a[] = {
+    //   0x01,
+    //   0x90, 0x19, 0x66, 0x2F, 0x4F, 0x86, 0x81, 0xEA, 0x81, 0xFA, 0x79, 0xD1, 0x00, 0x63, 0x00, 0x6F, 0x00, 0x6E, 0x00, 0x6E, 0x00, 0x6C, 0x00, 0x61, 0x00, 0x62, 0x76, 0x84, 0x6E, 0x2C, 0x8A, 0x66, 0x8A, 0x0A, 0x60, 0x6F, 
+    //   0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3,
+    //   0x02
+    // };
+
+    /*message: "Generated by TWISC@NTUST"*/
+    unsigned int message[] = {
+      0x01,
+      0xC7, 0xB2, 0xBB, 0x2C, 
+      0x0F, 0xD3, 0xCB, 0x64, 
+      0x90, 0x38, 0x0F, 0xA2, 
+      0x5E, 0x93, 0xD3, 0x21, 
+      0xC0, 0x49, 0xAD, 0x4E, 
+      0xA9,
+      
+      0xD1, 0x68, 0x34, 0x1A, 
+      0x8D, 0x46, 0xA3, 0xD1, 
+      0x68, 0x34, 0x1A, 0x8D, 
+      0x46, 0xA3, 0xD1, 0x68, 
+      0x34, 0x1A, 0x8D, 0x46, 
+      0xA3, 0xD1, 0x68, 0x34, 
+      0x1A, 0x8D, 0x46, 0xA3,
+      0xD1, 0x68, 0x34, 0x1A, 
+      0x8D, 0x46, 0xA3, 0xD1, 
+      0x68, 0x34, 0x1A, 0x8D, 
+      0x46, 0xA3, 0xD1, 0x68, 
+      0x34, 0x1A, 0x8D, 0x46, 
+      0xA3, 0xD1, 0x68, 0x34, 
+      0x1A, 0x8D, 0x46, 0xA3, 
+      0xD1, 0x68, 0x34, 0x1A, 
+      0x8D,
+      0x15
+    };
+
+   	for (int i = 0; i < 84; ++i) {
+       data->warning_msg_segment_r9[i] = message[i];
+		} 
+
+    field_asn1_octstring_number<asn1::dyn_octstring, uint16_t> warning_message_segment("warning_message_segment", \
+                                    &data->warning_msg_segment_r9);
+		
+		for (int i = 0; i < sizeof(data->warning_msg_segment_r9); ++i) {
+			printf("%02X", data->warning_msg_segment_r9[i]);
+		}
+		puts("");
+
+    if (warning_message_segment.parse(root)) {
+        fprintf(stderr, "Error parsing warning_message_segment\n");
+        return -1;
+    }
 
     return 0;
 }
@@ -794,6 +931,8 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   sib_type7_s*     sib7  = &rrc_cfg->sibs[6].set_sib7();
   sib_type9_s*     sib9  = &rrc_cfg->sibs[8].set_sib9();
   sib_type10_s*    sib10 = &rrc_cfg->sibs[9].set_sib10();
+  sib_type11_s*    sib11 = &rrc_cfg->sibs[10].set_sib11();
+  sib_type12_r9_s* sib12 = &rrc_cfg->sibs[11].set_sib12_v920();
   sib_type13_r9_s* sib13 = &rrc_cfg->sibs[12].set_sib13_v920();
 
   sib_type1_s* sib1 = &rrc_cfg->sib1;
@@ -883,6 +1022,18 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   // Generate SIB10 if defined in mapping info
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type10)) {
     if (parse_sib10(args->enb_files.sib_config, sib10)) {
+      return -1;
+    }
+  }
+
+  if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type11)) {
+    if (parse_sib11(args->enb_files.sib_config, sib11)) {
+      return -1;
+    }
+  }
+
+  if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type12_v920)) {
+    if (parse_sib12(args->enb_files.sib_config, sib12)) {
       return -1;
     }
   }

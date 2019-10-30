@@ -512,6 +512,13 @@ SRSASN_CODE fixed_octstring<N>::unpack(bit_ref& bref)
   }
   return SRSASN_SUCCESS;
 }
+// template <uint32_t N>
+// class warning_msg_segment_type_r9_e_
+// {
+// public:
+//   warning_msg_segment_type_r9_e_() {}
+  
+// };
 
 /************************
      dyn_octstring
