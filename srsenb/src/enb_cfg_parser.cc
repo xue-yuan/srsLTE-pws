@@ -648,28 +648,45 @@ int sib10_cell_parser::parse(libconfig::Setting& root)
         return -1;
     }
 
-    // @TODO
-    //field_asn1_octstring_number<asn1::fixed_octstring<2>, uint8_t> waring_type("waring_type",
-    //                                &data->waring_type);
-
-    // warning type: 0x580, 0000 0101 1000 0000
     field_asn1_octstring_number<asn1::fixed_octstring<2>, uint16_t> warning_type("warning_type", &data->warning_type);
-		if (warning_type.parse(root)) {
+	
+	if (warning_type.parse(root)) {
         fprintf(stderr, "Error parsing warning type\n");
         return -1;
-    }    
-    fprintf(stderr, "Warning type\n");
-//    fprintf(stderr, *data->warning_type);
-
-		
-    // warning type parse error
-    /*
-    if (warning_type.parse(root)) {
-	fprintf("stderr", "Error===============\n");
-	return -1;
     }
-    */
-    // dummy?
+    
+    // fprintf(stderr, "Warning type\n");
+
+    return 0;
+}
+
+int enb::parse_sib12(std::string filename, sib_type12_r9_s* data)
+{
+  parser::section sib12("sib10");
+  // call cell parser
+  sib10.add_field(new sib12_cell_parser(data));
+
+  // Run parser with single section
+  return parser::parse_section(filename, &sib12);
+}
+
+int sib12_cell_parser::parse(libconfig::Setting& root)
+{
+    field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> message_identifier("message_identifier",
+                                    &data->msg_id_r9);
+    if (message_identifier.parse(root)) {
+        fprintf(stderr, "Error parsing message identifier\n");
+        return -1;
+    }
+
+    field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> serial_number("serial_number",
+                                    &data->serial_num_r9);
+    if (serial_number.parse(root)) {
+        fprintf(stderr, "Error parsing serial number\n");
+        return -1;
+    }
+    
+    // fprintf(stderr, "Warning type\n");
 
     return 0;
 }

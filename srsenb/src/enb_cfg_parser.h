@@ -620,6 +620,20 @@ public:
 private:
   asn1::rrc::sib_type10_s* data;
 };
+
+class sib12_cell_parser : public parser::field_itf
+{
+public:
+  sib12_cell_parser(asn1::rrc::sib_type12_r9_s* data_) { data = data_; }
+  ~sib12_cell_parser(){}
+  int         parse(Setting& root);
+  const char* get_name() {
+    return "sib12_cell";
+  }
+
+private:
+  asn1::rrc::sib_type12_r9_s* data;
+};
 }
 
 #endif
