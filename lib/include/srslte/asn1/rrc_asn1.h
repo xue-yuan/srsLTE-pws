@@ -8375,17 +8375,19 @@ struct sib_type12_r9_s {
   };
   typedef enumerated<warning_msg_segment_type_r9_opts> warning_msg_segment_type_r9_e_;
 
+  // TODO dyn_octstring size
+
   // member variables
   bool                           ext                           = false;
   bool                           data_coding_scheme_r9_present = false;
   bool                           late_non_crit_ext_present     = false;
-  fixed_bitstring<16>            msg_id_r9; // Done
-  fixed_bitstring<16>            serial_num_r9; // Done
-  warning_msg_segment_type_r9_e_ warning_msg_segment_type_r9; // Done
-  uint8_t                        warning_msg_segment_num_r9 ; // Done
-  dyn_octstring                  warning_msg_segment_r9 = 84; 
-  fixed_octstring<1>             data_coding_scheme_r9; // Dont Touch
-  dyn_octstring                  late_non_crit_ext; // Dont Touch
+  fixed_bitstring<16>            msg_id_r9;
+  fixed_bitstring<16>            serial_num_r9;
+  warning_msg_segment_type_r9_e_ warning_msg_segment_type_r9;
+  uint8_t                        warning_msg_segment_num_r9 ;
+  dyn_octstring                  warning_msg_segment_r9;
+  fixed_octstring<1>             data_coding_scheme_r9;
+  dyn_octstring                  late_non_crit_ext;
 
   // group 0
   bool          warning_area_coordinates_segment_r15_present = false;

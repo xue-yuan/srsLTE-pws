@@ -1,3 +1,5 @@
 /build
 *.swp
 auto_build.sh
+.vscode/
+.fftw_wisdom
