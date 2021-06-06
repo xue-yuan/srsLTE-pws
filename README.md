@@ -3,6 +3,10 @@ srsLTE
 
 Based on commit hash (c4bcd6e2)
 
+> This changed support Public Warning System (SIB10, 12) through our API: [pws-script](https://github.com/xue-yuan/srsLTE-pws)
+> 
+> By Connectivity Lab@Taiwan Tech
+
 [![Build Status](https://travis-ci.org/srsLTE/srsLTE.svg?branch=master)](https://travis-ci.org/srsLTE/srsLTE)
 
 srsLTE is a free and open-source LTE software suite developed by SRS (www.softwareradiosystems.com). 
