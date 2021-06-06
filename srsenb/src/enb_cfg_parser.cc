@@ -37,6 +37,7 @@ using namespace asn1::rrc;
 
 namespace srsenb {
 
+
 int enb::parse_cell_cfg(all_args_t* args, srslte_cell_t* cell)
 {
   cell->frame_type = SRSLTE_FDD;
@@ -666,6 +667,7 @@ int sib10_cell_parser::parse(libconfig::Setting& root)
     return 0;
 }
 
+// TODO: SIB11
 // sib11
 int enb::parse_sib11(std::string filename, sib_type11_s* data)
 {
@@ -686,9 +688,6 @@ int sib11_cell_parser::parse(libconfig::Setting& root)
         fprintf(stderr, "Error parsing message identifier\n");
         return -1;
     }
-
-    std::cout << "----------------\n";
-    std::cout << &data->serial_num << "\n";
 
     field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> serial_number("serial_number",
                                     &data->serial_num);
@@ -716,7 +715,6 @@ int sib11_cell_parser::parse(libconfig::Setting& root)
     }
 
     unsigned int a[] = {0x01, 0xC5, 0x76, 0x59, 0x7E, 0x2E, 0xBB, 0xC7, 0xF9, 0x50, 0xA8, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1,0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46,0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x68, 0x34, 0x1A, 0x8D, 0x46, 0xA3, 0xD1, 0x00, 0x0A};
-    // unsigned int a[] = {0x01, 0xC5, 0x76, 0x59, 0x7E, 0x2E, 0xBB, 0xC7, 0xF9, 0x50, 0xA8, 0xD1, 0x68, 0x34, 0x1A, 0x0A};
 
    	for (int i = 0; i < 84; ++i) {
        data->warning_msg_segment[i] = a[i];
@@ -724,11 +722,6 @@ int sib11_cell_parser::parse(libconfig::Setting& root)
 
     field_asn1_octstring_number<asn1::dyn_octstring, uint16_t> warning_message_segment("warning_message_segment", \
                                     &data->warning_msg_segment);
-		
-		for (int i = 0; i < sizeof(data->warning_msg_segment); ++i) {
-			printf("%02X", data->warning_msg_segment[i]);
-		}
-		puts("");
 
     if (warning_message_segment.parse(root)) {
         fprintf(stderr, "Error parsing warning_message_segment\n");
@@ -742,25 +735,25 @@ int sib11_cell_parser::parse(libconfig::Setting& root)
 //sib12
 int enb::parse_sib12(std::string filename, sib_type12_r9_s* data)
 {
-  parser::section sib12("sib12");
-  // call cell parser
-  sib12.add_field(new sib12_cell_parser(data));
-  sib12.add_field(new parser::field<uint8>("warning_message_segment_number", &data->warning_msg_segment_num_r9));
+    parser::section sib12("sib12");
+    // call cell parser
+    sib12.add_field(new sib12_cell_parser(data));
+    sib12.add_field(new parser::field<uint8>("warning_message_segment_number", &data->warning_msg_segment_num_r9));
 
-  // Run parser with single section
-  return parser::parse_section(filename, &sib12);
+    // Run parser with single section
+    return parser::parse_section(filename, &sib12);
 }
 
 int sib12_cell_parser::parse(libconfig::Setting& root)
 {
+    std::string BYTE_CODE_PATH = "/home/labuser/Desktop/API/bytes_code";
+
     field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> message_identifier("message_identifier",
                                     &data->msg_id_r9);
     if (message_identifier.parse(root)) {
         fprintf(stderr, "Error parsing message identifier\n");
         return -1;
     }
-
-    std::cout << &data->serial_num_r9 << "\n";
 
     field_asn1_bitstring_number<asn1::fixed_bitstring<16>, uint16_t> serial_number("serial_number",
                                     &data->serial_num_r9);
@@ -787,120 +780,10 @@ int sib12_cell_parser::parse(libconfig::Setting& root)
         return -1;
     }
 
-/*
-     * {
-     *  encoding: "UCS2",
-     *  message: "中文" 
-     * }
-     */
-
-    /*//
-    unsigned char message[] = {
-      0x01,
-      0x00, 0x68, 0x00, 0x74, 
-      0x00, 0x74, 0x00, 0x70, 
-      0x00, 0x73, 0x00, 0x3A, 
-      0x00, 0x2F, 0x00, 0x2F, 
-      0x00, 0x67, 0x00, 0x6F, 
-      0x00, 0x6F, 0x00, 0x67, 
-      0x00, 0x6C, 0x00, 0x65, 
-      0x00, 0x2E, 0x00, 0x63, 
-      0x00, 0x6F, 0x00, 0x6D,
-
-      0x97, 0xD3, 0x57, 0x0B,
-      0x74, 0x5C, 0x4F, 0x86, 
-      0x55, 0x66,
-
-      0x00, 0x6E, 0x00, 0x67, 
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x24
-    };
-    //*/
-
-    /*
-     * {
-     *  encoding: "UCS2",
-     *  message: "testing" 
-     * }
-     */
-
-    /*//
-    unsigned char message[] = {
-      0x01,
-      0x00, 0x74, 0x00, 0x65, 
-      0x00, 0x73, 0x00, 0x74, 
-      0x00, 0x69, 0x00, 0x6E, 
-      0x00, 0x67, 
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x01, 0x01, 0x01, 0x01,
-      0x0e
-    };
-    //*/
-
-    /*
-     * {
-     *  encoding: "GSM 7bit",
-     *  message: "Generated by TWISC@NTUST" 
-     * }
-     */
-
-    /*//
-    unsigned char message[] = {
-      0x01,
-      0xC7, 0xB2, 0xBB, 0x2C, 
-      0x0F, 0xD3, 0xCB, 0x64, 
-      0x90, 0x38, 0x0F, 0xA2, 
-      0x5E, 0x93, 0xD3, 0x21, 
-      0xC0, 0x49, 0xAD, 0x4E, 
-      0xA9,
-      
-      0xD1, 0x68, 0x34, 0x1A, 
-      0x8D, 0x46, 0xA3, 0xD1, 
-      0x68, 0x34, 0x1A, 0x8D, 
-      0x46, 0xA3, 0xD1, 0x68, 
-      0x34, 0x1A, 0x8D, 0x46, 
-      0xA3, 0xD1, 0x68, 0x34, 
-      0x1A, 0x8D, 0x46, 0xA3,
-      0xD1, 0x68, 0x34, 0x1A, 
-      0x8D, 0x46, 0xA3, 0xD1, 
-      0x68, 0x34, 0x1A, 0x8D, 
-      0x46, 0xA3, 0xD1, 0x68, 
-      0x34, 0x1A, 0x8D, 0x46, 
-      0xA3, 0xD1, 0x68, 0x34, 
-      0x1A, 0x8D, 0x46, 0xA3, 
-      0xD1, 0x68, 0x34, 0x1A, 
-      0x8D,
-      0x15
-    };
-    //*/
-
     // TODO: Can read exceed 84 byte and split to different page
 
-    //*//
     // Read Byte Code.
-    std::ifstream file("/home/labuser/Desktop/API/bytes_code");
+    std::ifstream file(BYTE_CODE_PATH);
     std::string line = "";
 
     // Calculate the line of Byte Code(new line + 1).
@@ -914,9 +797,6 @@ int sib12_cell_parser::parse(libconfig::Setting& root)
     // Calculate how much memory should allocate. 
     int message_page = ceil(byte_code_line/82.0);
     int message_allocate = 83*message_page + 1;
-
-    std::cout << "Line: " << byte_code_line << '\n';
-    std::cout << "Total Memory: " << message_allocate << '\n';
 
     // Allocate Memory
     unsigned char* message = new unsigned char[message_allocate];
@@ -955,28 +835,13 @@ int sib12_cell_parser::parse(libconfig::Setting& root)
             }
         }
         message[message_allocate - 1] = message_section_length;
-
-        std::cout << "Total Length: " << message_total + 1 << '\n';
-        std::cout << "Page: " << message_page - 1 << '\n';
-        std::cout << "Last Section Length: " << message_section_length << '\n';
-
     } else {
         std::cout << "Error while Reading File.\n";
     }
-
-
-
-    for (int i=0; i<message_allocate; ++i) {
-        printf("%d -> %02X\n", i, message[i]);
-    }
-
-    //*/
-
+    
     for (int i = 0; i < message_allocate; ++i) {
-      data->warning_msg_segment_r9[i] = message[i];
-			printf("%02X", data->warning_msg_segment_r9[i]);
-		} 
-		puts("");
+        data->warning_msg_segment_r9[i] = message[i];
+    } 
 
     field_asn1_octstring_number<asn1::dyn_octstring, uint16_t> warning_message_segment("warning_message_segment", \
                                     &data->warning_msg_segment_r9);

@@ -534,7 +534,6 @@ bool rrc::is_paging_opportunity(uint32_t tti, uint32_t *payload_len)
       int sf_idx = sf_pattern[i_s % 4][(Ns - 1) % 4];
       if (sf_idx < 0) {
 				        rrc_log->error("SF pattern is N/A for Ns=%d, i_s=%d, imsi_decimal=%d\n", Ns, i_s, ueid);
-								rrc_log->console("FKKKKKKKKKKKKKKK");
       } else if ((uint32_t)sf_idx == (tti % 10)) {
 				paging_rec->paging_record_list_present = true;
         //paging_rec->etws_ind_present = true;

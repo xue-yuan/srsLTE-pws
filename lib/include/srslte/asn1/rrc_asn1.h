@@ -7442,7 +7442,7 @@ struct rr_cfg_common_sib_s {
   copy_ptr<pusch_cfg_common_v1270_s> pusch_cfg_common_v1270;
   // group 3
   bool                               bcch_cfg_v1310_present         = false;
-  bool                               pcch_cfg_v1310_present         = true; /*rewrite*/
+  bool                               pcch_cfg_v1310_present         = true;
   bool                               freq_hop_params_r13_present    = false;
   bool                               pdsch_cfg_common_v1310_present = false;
   bool                               pusch_cfg_common_v1310_present = false;
@@ -40040,7 +40040,7 @@ typedef dyn_array<paging_record_s> paging_record_list_l;
 struct paging_s {
   // member variables
   bool                 paging_record_list_present = false;
-  bool                 sys_info_mod_present       = true; /*rewrite*/
+  bool                 sys_info_mod_present       = true;
   bool                 etws_ind_present           = false;
   bool                 non_crit_ext_present       = false;
   paging_record_list_l paging_record_list;
