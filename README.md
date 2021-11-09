@@ -1,7 +1,7 @@
 srsLTE
 ========
 
-Based on commit hash (c4bcd6e2)
+Based on commit c4bcd6e2
 
 > This changed support Public Warning System (SIB10, 12) through our API: [pws-script](https://github.com/xue-yuan/srsLTE-pws)
 > 
